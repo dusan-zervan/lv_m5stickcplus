@@ -1,6 +1,7 @@
 name: esp32 port
 
 on:
+  workflow_dispatch:
   push:
   pull_request:
     paths:
@@ -23,11 +24,12 @@ jobs:
       fail-fast: false
       matrix:
         ci_func:  # names are functions in ci.sh
-          - esp32_build_cmod_spiram_s2
-          - esp32_build_s3_c3
+          - ssnd_m5stick
     runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v4
+      with:
+        submodules: recursive
 
     - id: idf_ver
       name: Read the ESP-IDF version
@@ -53,5 +55,15 @@ jobs:
       with:
         key: esp32-${{ matrix.ci_func }}
 
-    - name: Build ci_${{matrix.ci_func }}
-      run: source tools/ci.sh && ci_${{ matrix.ci_func }}
+    - name: Build Generic ESP32
+      run: |
+        source esp-idf/export.sh
+        make -C mpy-cross
+        make -C ports/esp32 BOARD=GENERIC submodules
+        make -C ports/esp32 BOARD=GENERIC
+
+    - name: Upload Firmware
+      uses: actions/upload-artifact@v4
+      with:
+        name: firmware-esp32-generic
+        path: ports/esp32/build-GENERIC/firmware.bin
