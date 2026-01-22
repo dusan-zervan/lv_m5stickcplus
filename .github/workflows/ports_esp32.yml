@@ -59,8 +59,8 @@ jobs:
       run: |
         source esp-idf/export.sh
         make -C mpy-cross
-        make -C ports/esp32 BOARD=GENERIC submodules
-        make -C ports/esp32 BOARD=GENERIC
+        make -C ports/esp32 BOARD=ESP32_GENERIC submodules
+        make -C ports/esp32 BOARD=ESP32_GENERIC
 
     - name: Upload Firmware
       uses: actions/upload-artifact@v4
